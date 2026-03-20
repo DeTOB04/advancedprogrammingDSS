@@ -56,7 +56,7 @@ def accept_cookies(driver):
 # extract reviews (UPDATED)
 # -------------------------
 def get_reviews(driver, base_url, start):
-    url = f"{base_url}?start={start}"   # ✅ NOW USES INPUT URL
+    url = f"{base_url}?start={start}"
     driver.get(url)
 
     wait = WebDriverWait(driver, 15)
@@ -119,7 +119,7 @@ def get_reviews(driver, base_url, start):
 
 
 # -------------------------
-# MAIN FUNCTION (NEW)
+# MAIN FUNCTION
 # -------------------------
 def scrape_yelp(base_url, max_pages=10):
     if not base_url.startswith("http"):
