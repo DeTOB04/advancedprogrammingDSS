@@ -59,18 +59,20 @@ def setup_driver():
 # COOKIE HANDLING
 # -------------------------
 
-def accept_cookies(driver):
+def decline_cookies(driver):
     """
-    Attempts to click the cookie consent 'Accept' button if it appears.
-    Silently passes if the button is not found (e.g. already accepted).
+    Clicks the 'reject non-essential cookies' button on the OneTrust banner.
+    Uses the stable button ID which is consistent across all Yelp language versions,
+    so no language-specific text matching is needed.
+    Silently passes if no banner appears.
     """
     try:
         wait = WebDriverWait(driver, 5)
         btn = wait.until(EC.element_to_be_clickable(
-            (By.XPATH, '//button//span[contains(text(),"Accept")]')
+            (By.ID, "onetrust-reject-all-handler")
         ))
         btn.click()
-        print("Cookies accepted.")
+        print("Cookies declined.")
     except:
         pass  # No cookie banner appeared, continue normally
 
@@ -174,11 +176,11 @@ def extract_reviews_from_page(driver):
         try:
             parent = text_el.find_element(
                 By.XPATH,
-                './ancestor::div[.//*[@role="img" and contains(@aria-label, "ster")]][1]'
+                './ancestor::div[.//*[@role="img" and (contains(@aria-label, "star") or contains(@aria-label, "ster") or contains(@aria-label, "étoile") or contains(@aria-label, "Stern"))]][1]'
             )
             rating_el = parent.find_element(
                 By.XPATH,
-                './/*[@role="img" and contains(@aria-label, "ster")]'
+                './/*[@role="img" and (contains(@aria-label, "star") or contains(@aria-label, "ster") or contains(@aria-label, "étoile") or contains(@aria-label, "Stern"))]'
             )
             rating_label = rating_el.get_attribute("aria-label")
 
@@ -238,7 +240,7 @@ def scrape_yelp(base_url, max_pages=15):
             driver.get(current_url)
 
             # Handle cookie consent on first load
-            accept_cookies(driver)
+            decline_cookies(driver)
 
             # Extract reviews from the already-loaded page
             reviews = extract_reviews_from_page(driver)
